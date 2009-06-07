@@ -35,8 +35,12 @@ class PreviewController < ApplicationController
       page.published_at = page.updated_at = page.created_at = Time.now
       page.parent = Page.find($1) if request.referer =~ %r{/admin/pages/(\d+)/child/new}
     end
-    params.fetch(:part, []).each do |i, attrs|
-      page.parts.build(attrs)
+    params[:page].fetch(:parts_attributes, []).each do |i, attrs|
+      new_attrs = {}
+      attrs.each_key do |key|
+        new_attrs[key] = attrs[key] unless (key =~ /_/) == 0
+      end
+      page.parts.build(new_attrs)
     end
     return page
   end
